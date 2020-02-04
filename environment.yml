@@ -9,7 +9,6 @@ dependencies:
   - flake8=3.7.7
   - gpustat
   - matplotlib=3.0.3
-  - mypy
   - numpy=1.16.3
   - pandas=0.24.2
   - phantomjs

@@ -1,4 +1,4 @@
-# Copyright 2019 (anonymized).
+# Copyright 2019 Ondrej Skopek.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -56,19 +56,19 @@ axis_title = {
 }
 
 
-def set_font_size(p: bokeh.plotting.figure, font_size: int = 30, small_font_size: int = 25) -> None:
+def set_font_size(p: bokeh.plotting.figure, font_size: int = 40, small_font_size: int = 35) -> None:
     font_size_s = f"{font_size}pt"
     small_font_size_s = f"{small_font_size}pt"
     if p.title is not None:
         p.title.text_font_size = font_size_s
         p.title.text_color = "black"
 
-    p.xaxis.axis_line_width = 3
-    p.xaxis.major_tick_line_width = 3
-    p.xaxis.minor_tick_line_width = 3
-    p.yaxis.axis_line_width = 3
-    p.yaxis.major_tick_line_width = 3
-    p.yaxis.minor_tick_line_width = 3
+    p.xaxis.axis_line_width = 5
+    p.xaxis.major_tick_line_width = 5
+    p.xaxis.minor_tick_line_width = 5
+    p.yaxis.axis_line_width = 5
+    p.yaxis.major_tick_line_width = 5
+    p.yaxis.minor_tick_line_width = 5
 
     p.xaxis.axis_label_text_font_size = font_size_s
     p.xaxis.major_label_text_color = "black"
@@ -144,9 +144,9 @@ def box_whiskers_plot(df: pd.DataFrame, out_folder: str, statistic: str = "ll", 
                               plot_height=BASE_HEIGHT,
                               sizing_mode="stretch_width")
 
-    p.xaxis.major_label_orientation = math.pi / 6
-    p.xaxis.major_label_standoff = 15
-    p.yaxis.major_label_standoff = 10
+    p.xaxis.major_label_orientation = math.pi / 4  # math.pi / 6
+    p.xaxis.major_label_standoff = 20
+    p.yaxis.major_label_standoff = 15
 
     # if no outliers, shrink lengths of stems to be no longer than the minimums or maximums
     qmin = groups.quantile(q=0.00)
@@ -154,17 +154,19 @@ def box_whiskers_plot(df: pd.DataFrame, out_folder: str, statistic: str = "ll", 
     upper[statistic] = [min([x, y]) for (x, y) in zip(list(qmax.loc[:, statistic]), upper[statistic])]
     lower[statistic] = [max([x, y]) for (x, y) in zip(list(qmin.loc[:, statistic]), lower[statistic])]
 
+    lw = 2
+
     # stems
-    p.segment(cats, upper[statistic], cats, q3[statistic], line_color="black")
-    p.segment(cats, lower[statistic], cats, q1[statistic], line_color="black")
+    p.segment(cats, upper[statistic], cats, q3[statistic], line_color="black", line_width=lw)
+    p.segment(cats, lower[statistic], cats, q1[statistic], line_color="black", line_width=lw)
 
     # boxes
-    p.vbar(cats, 0.7, q2[statistic], q3[statistic], fill_color="#E08E79", line_color="black")
-    p.vbar(cats, 0.7, q1[statistic], q2[statistic], fill_color="#3B8686", line_color="black")
+    p.vbar(cats, 0.7, q2[statistic], q3[statistic], line_width=lw, fill_color="#E08E79", line_color="black")
+    p.vbar(cats, 0.7, q1[statistic], q2[statistic], line_width=lw, fill_color="#3B8686", line_color="black")
 
     # whiskers (almost-0 height rects simpler than segments)
-    p.rect(cats, lower[statistic], 0.2, 0.001, line_color="black", fill_color="black")
-    p.rect(cats, upper[statistic], 0.2, 0.001, line_color="black", fill_color="black")
+    p.rect(cats, lower[statistic], 0.2, 0.001, line_color="black", line_width=lw, fill_color="black")
+    p.rect(cats, upper[statistic], 0.2, 0.001, line_color="black", line_width=lw, fill_color="black")
 
     # outliers
     def outliers(group: pd.DataFrame) -> pd.Series:
@@ -344,8 +346,8 @@ def models_latex_table(mean: pd.DataFrame, std: pd.DataFrame, show_curvature: bo
 
     model_mean = _last(mean)
     model_std = _last(std)
-    rows = [[f"${utils.texify_components(x)}$" for x in model_mean["model"]]]
-    for key in ["ll", "elbo", "bce", "kl"]:  # "mi", "cov_norm"]:
+    rows = [[f"{x} ${utils.texify_components(x)}$" for x in model_mean["model"]]]
+    for key in ["ll"]:  # , "elbo", "bce", "kl"]:  # "mi", "cov_norm"]:
         if key not in model_mean.keys():
             warnings.warn(f"Key {key} not in data frame, skipping.")
             continue
@@ -377,7 +379,7 @@ def models_latex_table(mean: pd.DataFrame, std: pd.DataFrame, show_curvature: bo
             curvature = False
             del rows[-1]
 
-    rows_transposed = zip(*rows)
+    rows_transposed = sorted(list(zip(*rows)), key=lambda x: x[0])
     rows_str = "\n".join(" & ".join(str(element) for element in row) + "\\\\" for row in rows_transposed)
 
     if show_curvature and curvature:

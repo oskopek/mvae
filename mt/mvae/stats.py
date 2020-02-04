@@ -1,4 +1,4 @@
-# Copyright 2019 (anonymized).
+# Copyright 2019 Ondrej Skopek.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -253,6 +253,8 @@ class EpochStats:
         stats.add_scalar(prefix + "/bce", self.bce, epoch=True)
         stats.add_scalar(prefix + "/kl", self.kl, epoch=True)
         stats.add_scalar(prefix + "/elbo", self.elbo, epoch=True)
+        for i in range(len(self.component_kl)):
+            stats.add_scalar(prefix + f"/kl_comp_{i}", self.component_kl[i], epoch=True)
         if self.log_likelihood:
             stats.add_scalar(prefix + "/log_likelihood", self.log_likelihood, epoch=True)
         if self.mutual_info:

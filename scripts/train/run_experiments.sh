@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2019 (anonymized).
+# Copyright 2019 Ondrej Skopek.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -51,15 +51,10 @@ gpujub_leo () {
     bsub -W ${time_per_job} -n ${nodes} -R "${gpu}" "python -O -m mt.examples.run --device=cuda ${@}" 2>&1
 }
 
-if [[ $zdim -eq 6 ]]; then
-    models="e2,h2,s2
-    3e2
-    3h2
-    3s2
-    3p2"
-#    e2,p2,d2
-#    3d2
-#    3u2"
+if [[ $zdim -eq 12 ]]; then
+    models="6e2,6h2,6s2
+    18e2
+    6e2,6p2,6d2"
 elif [[ $zdim -eq 144 ]]; then
     models="24e2,24h2,24s2
     72e2
@@ -89,7 +84,7 @@ for model in ${models}; do
          "
 
     start_time="$(date -u '+%s%N')"
-    if [[ $(hostname -d) == "anonymous" ]]; then
+    if [[ $(hostname -d) == "leonhard.ethz.ch" ]]; then
         gpujub_leo $args
         sleep 2s
     else

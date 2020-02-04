@@ -4,9 +4,8 @@
 
 ## Overview
 
-This repository contains a PyTorch implementation of the mixed-curvature variational autoencoder, or M-VAE,
-as presented in [[1]](#citation). Also check out our blogpost (anonymized).
-Code base is been based on [[2]](#citation).
+This repository contains a PyTorch implementation of the Mixed-curvature Variational Autoencoder, or M-VAE,
+as presented in [[1]](#citation). For the arXiv paper, please see: https://arxiv.org/abs/1911.08411.
 
 ## Installation
 
@@ -25,7 +24,7 @@ make download_data
 * `chkpt/` - Checkpoints for trained models.
 * `data/` - Data folder. Contains a script necessary for downloading the datasets, and the downloaded data.
 * `mathematica/` - Mathematica scripts (various formula derivations, etc).
-* `mt/` - Source folder.
+* `mt/` - Source folder (stands for Master Thesis).
   * `data/` - Data loading, preprocessing, batching, and pre-trained embeddings.
   * `examples/` - Contains the main executable file. Reads flags and runs the corresponding training and/or evaluation.
   * `mvae/` - Model directory. Note that models heavily use inheritance!
@@ -38,15 +37,17 @@ make download_data
 * `README.md` - This manual.
 * `LICENSE` - Apache Standard License 2.0.
 * `environment.yml` - Required Python packages.
-* `THIRD_PARTY.md` - List of third party software used in this project.
+* `THIRD_PARTY.md` - List of third party software used in this thesis.
 
 ## Usage
 
 To run training and inference, activate the created conda environment and run the examples:
+
 ```bash
 conda activate pt
 python -m mt.examples.run --dataset="mnist" --model="h2,s2,e2" --fixed_curvature=False 
 ```
+
 Take a look at `mt/examples/run.py` for a list of command line arguments.
 
 For an evaluation run, see `mt/examples/eval.py`.
@@ -63,7 +64,7 @@ make test    # run tests
 
 ## Feedback
 
-For questions and comments, feel free to contact (anonymized).
+For questions and comments, feel free to contact [Ondrej Skopek](mailto:oskopek@oskopek.com).
 
 ## License
 
@@ -71,14 +72,15 @@ ASL 2.0
 
 ## Citation
 
-```
-[1] (anonymized)
-[2] Davidson, T. R., Falorsi, L., De Cao, N., Kipf, T.,
-and Tomczak, J. M. (2018). Hyperspherical Variational
-Auto-Encoders. 34th Conference on Uncertainty in Artificial Intelligence (UAI-18).
-```
+Ondrej Skopek, Octavian-Eugen Ganea, Gary Bécigneul. Mixed-curvature Variational Autoencoders. International Conference on Learning Representations (ICLR) 2020. URL https://openreview.net/forum?id=S1g6xeSKDS
 
 BibTeX format:
 ```bibtex
-(anonymized)
+@inproceedings{skopek2020mixedcurvature,
+  title={Mixed-curvature Variational Autoencoders},
+  author={Ondrej Skopek and Octavian-Eugen Ganea and Gary B{\'e}cigneul,
+  booktitle={International Conference on Learning Representations},
+  year={2020},
+  url={https://openreview.net/forum?id=S1g6xeSKDS}
+}
 ```

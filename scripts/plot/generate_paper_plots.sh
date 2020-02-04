@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2019 (anonymized).
+# Copyright 2019 Ondrej Skopek.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,11 +25,12 @@ dir="$HOME/git/mvae-paper"
 mod="mt.visualization.generate_plots"
 
 rm -f plots/*
-for folder in $(find $dir/results-fin2/ -type d -name '*_*'); do
+for folder in $(find $dir/results-fin2/ -type d -name '*_*_redacted'); do
     folder=$(basename $folder)
     echo $folder
-    python -m "$mod" --plot models --glob "$dir/results-fin2/$folder/*" --exp $folder --statistics "ll,bce" | prepend
+    python -m "$mod" --plot models --glob "$dir/results-fin2/$folder/*" --exp $folder --statistics "ll" | prepend
     rm -rf "$dir/plots/$folder"
-    cp -r plots/ "$dir/plots/$folder"
+    nonred=$(echo $folder | sed -E 's@/[^/]*$@@')
+    cp -r plots/ "$dir/plots/$nonred"
 done
 

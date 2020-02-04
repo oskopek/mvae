@@ -1,4 +1,4 @@
-# Copyright 2019 (anonymized).
+# Copyright 2019 Ondrej Skopek.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ def main() -> None:
     parser.add_argument("--model_a", type=str, default="e72", help="Model latent space description.")
     parser.add_argument("--chkpt_a",
                         type=str,
-                        default="/home/anonymous/git/mt/vae-mnist-e72-2019-08-28T13:21:06.740534/497.chkpt",
+                        default="/home/oskopek/git/mt/vae-mnist-e72-2019-08-28T13:21:06.740534/497.chkpt",
                         help="Model latent space description.")
     parser.add_argument("--dataset",
                         type=str,

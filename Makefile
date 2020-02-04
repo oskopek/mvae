@@ -1,4 +1,4 @@
-.PHONY = clean check types test conda download_data genplots genlatentspace
+.PHONY = clean check test conda download_data
 
 clean:
 	yapf -r -i mt/ tests/
@@ -6,11 +6,7 @@ clean:
 check: clean
 	flake8 .
 
-types: check
-	mypy -p mt 2>&1
-	mypy -p tests 2>&1
-
-test: check #types
+test: check
 	pytest 2>&1
 
 conda:
@@ -21,9 +17,3 @@ conda:
 download_data:
 	pip install --no-deps git+https://github.com/geoopt/geoopt.git
 	python -m data.download
-
-genplots:
-	python -m mt.visualization.generate_plots --glob 'lsf.*' --plot 'models'
-
-genlatentspace:
-	python -m mt.visualization.latent_space --path 'path_to_chkpt_dir'

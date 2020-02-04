@@ -1,4 +1,4 @@
-# Copyright 2019 (anonymized).
+# Copyright 2019 Ondrej Skopek.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ class FakeVaeDataset(VaeDataset):
             len, FakeVaeDataset._tensorize(eval_data))
 
 
-class TestMnistVaeDataset(MnistVaeDataset):
+class MnistVaeDatasetForTest(MnistVaeDataset):
 
     def __init__(self, batch_size: int, data_folder: str, take_n: int) -> None:
         super().__init__(batch_size, data_folder)
@@ -257,7 +257,7 @@ def _run_training(model: str, device: str, fixed_curvature: bool, likelihood_n: 
     components = components_lam(fixed_curvature)
 
     dataset = FakeVaeDataset()
-    # dataset = TestMnistVaeDataset(batch_size=2, data_folder="./data", take_n=2)
+    # dataset = MnistVaeDatasetForTest(batch_size=2, data_folder="./data", take_n=2)
     vae = FeedForwardVAE(dataset=dataset, h_dim=2, components=components, scalar_parametrization=sp).to(device)
     trainer = Trainer(model=vae, img_dims=dataset.img_dims, chkpt_dir=f"./chkpt/test/{model}")
     os.makedirs(trainer.chkpt_dir, exist_ok=True)
@@ -282,25 +282,26 @@ def _run_training(model: str, device: str, fixed_curvature: bool, likelihood_n: 
                                      max_epochs=2,
                                      likelihood_n=likelihood_n,
                                      betas=[1.])
-    if not fixed_curvature:
-        for component in vae.components:
-            if not isinstance(component, EuclideanComponent) and not isinstance(component, UniversalComponent):
-                assert not component.manifold.curvature.allclose(torch.tensor(-1., device=device))
-                assert not component.manifold.curvature.allclose(torch.tensor(0., device=device))
-                assert not component.manifold.curvature.allclose(torch.tensor(1., device=device))
-    else:
-        for component in vae.components:
-            if isinstance(component, EuclideanComponent) or isinstance(component, ConstantComponent):
-                assert component.manifold.curvature == 0
-            elif isinstance(component, SphericalComponent) or isinstance(component,
-                                                                         StereographicallyProjectedSphereComponent):
-                assert component.manifold.curvature.allclose(torch.tensor(0.01, device=device))
-            elif isinstance(component, HyperbolicComponent) or isinstance(component, PoincareComponent):
-                assert component.manifold.curvature.allclose(torch.tensor(-0.01, device=device))
-            elif isinstance(component, UniversalComponent):
-                assert True
-            else:
-                raise ValueError(f"Unknown component type '{component}'.")
+    if len(res) == 2:
+        if not fixed_curvature:
+            for component in vae.components:
+                if not isinstance(component, EuclideanComponent) and not isinstance(component, UniversalComponent):
+                    assert not component.manifold.curvature.allclose(torch.tensor(-1., device=device))
+                    assert not component.manifold.curvature.allclose(torch.tensor(0., device=device))
+                    assert not component.manifold.curvature.allclose(torch.tensor(1., device=device))
+        else:
+            for component in vae.components:
+                if isinstance(component, EuclideanComponent) or isinstance(component, ConstantComponent):
+                    assert component.manifold.curvature == 0
+                elif isinstance(component, SphericalComponent) or isinstance(component,
+                                                                             StereographicallyProjectedSphereComponent):
+                    assert component.manifold.curvature.allclose(torch.tensor(0.01, device=device))
+                elif isinstance(component, HyperbolicComponent) or isinstance(component, PoincareComponent):
+                    assert component.manifold.curvature.allclose(torch.tensor(-0.01, device=device))
+                elif isinstance(component, UniversalComponent):
+                    assert True
+                else:
+                    raise ValueError(f"Unknown component type '{component}'.")
     return res
 
 

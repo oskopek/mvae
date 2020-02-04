@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2019 (anonymized).
+# Copyright 2019 Ondrej Skopek.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 
 set -e
 
-runs=1
+runs=2
 
 h_dim=400
 
@@ -30,7 +30,7 @@ epoch_map[omniglot]=300
 epoch_map[cifar]=200
 
 declare -A z_dim_map
-z_dim_map[bdp]="6"
+z_dim_map[bdp]="12"
 z_dim_map[mnist]="6"
 z_dim_map[omniglot]="6"
 z_dim_map[cifar]="144"
@@ -51,7 +51,7 @@ beta_end="1.0"
 beta_end_epoch=50
 
 for fixed_curvature in "True" "False"; do
-    for dataset in "mnist"; do
+    for dataset in "bdp"; do
         epochs=${epoch_map[$dataset]}
         time="24:00"
         beta_start=${beta_start_map[$dataset]}
