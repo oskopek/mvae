@@ -1,0 +1,53 @@
+#!/usr/bin/env wolframscript
+(* ::Package:: *)
+
+(* ::Input:: *)
+(*R=0.2;*)
+(*q={R,0,0};*)
+(*p=ParametricPlot[{x/(1-Sqrt[R^2-x^2-y^2]),y/(1-Sqrt[R^2-x^2-y^2])},{x,-R/2,R/2},{y,-R/2,R/2}];*)
+(*Show[p]*)
+(**)
+
+
+(* ::Input:: *)
+(**)
+
+
+(* ::Input:: *)
+(*K=1;*)
+(*R=1/Sqrt[K];*)
+(*Print["R=",R]*)
+(*Print["K=",K]*)
+(*conf[x_]:=2/(1+K*Norm[x]^2);*)
+(*dps[x_, y_]:=conf[x]*conf[y]*EuclideanDistance[x,y];*)
+(*sigma[x_]:=R*x[[;;-2]]/(R-x[[3]]);*)
+(*sigmainv[x_]:=Flatten[{R*((Norm[x]^2 - R^2)/(Norm[x]^2 + R^2)),(2*R^2*x)/(Norm[x]^2+R^2)}];*)
+(**)
+(*a=R*{0,1, 0};*)
+(*Print["a=",a]*)
+(*as=sigma[a];*)
+(*Print["sigma[a]=",N[as], " Norm: ", N[Norm[as]]]*)
+(*ass=N[sigmainv[as]];*)
+(*Print["sigmainv[sigma[a]]=",ass]*)
+(*Print["Should be == R: Norm[a]=",N[Norm[a]], "=", Norm[ass]]*)
+(**)
+(*c=Sqrt[3];*)
+(*b={R, R, R}/c;*)
+(*Print["b=",b]*)
+(*bs=sigma[b];*)
+(*Print["sigma[b]=",N[bs], " Norm: ", N[Norm[bs]]]*)
+(*bss=N[sigmainv[bs]];*)
+(*Print["sigmainv[sigma[b]]=",bss]*)
+(*Print["Should be == R: Norm[b]=",N[Norm[b]], "=", Norm[bss]]*)
+(**)
+(*Print["angle 3d = ", N[ArcCos[Dot[a/Norm[a],b/Norm[b]]]]/Degree]*)
+(*Print["angle 2d = ", N[ArcCos[Dot[as/Norm[as],bs/Norm[bs]]]]/Degree]*)
+(**)
+(*Print["edist^2 3D = ",N[EuclideanDistance[a,b]^2]]*)
+(*Print["sdist from edist^2 3D = ",N[ArcCos[1-(EuclideanDistance[a,b]^2 / 2)]]]*)
+(*Print["sdist 3D = ",N[ArcCos[Dot[a,b]]]]*)
+(*Print["dp 2D = ",N[dps[as,bs]]]*)
+(**)
+
+
+

@@ -1,0 +1,5 @@
+[style]
+based_on_style = google
+coalesce_brackets = True
+column_limit = 120
+split_before_first_argument = False

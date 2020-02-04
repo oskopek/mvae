@@ -1,0 +1,15 @@
+[flake8]
+exclude =
+    .svn,
+    CVS,
+    .bzr,
+    .hg,
+    .git,
+    __pycache__,
+    .tox,
+    .eggs,
+    *.egg,
+    .ipynb_checkpoints,
+    # data
+    data/
+max-line-length = 120

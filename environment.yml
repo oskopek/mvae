@@ -1,0 +1,27 @@
+name: pt
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - bokeh=1.1.0
+  - cudatoolkit=9.0
+  - flake8=3.7.7
+  - gpustat
+  - matplotlib=3.0.3
+  - mypy
+  - numpy=1.16.3
+  - pandas=0.24.2
+  - phantomjs
+  - pytest=4.4.1
+  - python=3.7.3
+  - pytorch=1.1.0
+  - scikit-learn=0.21.1
+  - scipy=1.2.1
+  - selenium
+  - tensorboard=1.13.1
+  - tensorboardx=1.6
+  - torchvision=0.3.0
+  - yapf=0.27.0
+prefix: $HOME/miniconda3/envs/pt
+
