@@ -11,6 +11,7 @@ dependencies:
   - matplotlib=3.0.3
   - numpy=1.16.3
   - pandas=0.24.2
+  - pillow=6.0.0
   - phantomjs
   - pytest=4.4.1
   - python=3.7.3
