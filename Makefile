@@ -15,5 +15,5 @@ conda:
 	conda env create -f environment.yml
 
 download_data:
-	pip install --no-deps git+https://github.com/geoopt/geoopt.git
+	pip install --no-deps geoopt==0.1.0
 	python -m data.download
