@@ -45,7 +45,12 @@ To run training and inference, activate the created conda environment and run th
 
 ```bash
 conda activate pt
-python -m mt.examples.run --dataset="mnist" --model="h2,s2,e2" --fixed_curvature=False 
+
+# MNIST:
+python -m mt.examples.run --dataset="mnist" --model="h2,s2,e2" --fixed_curvature=False
+
+# CIFAR:
+python -m mt.examples.run --dataset="cifar" --model="h2,s2,e2" --fixed_curvature=False --h_dim=8192 --architecture="conv"
 ```
 
 Take a look at `mt/examples/run.py` for a list of command line arguments.

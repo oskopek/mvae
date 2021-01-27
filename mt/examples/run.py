@@ -35,6 +35,10 @@ def main() -> None:
     parser.add_argument("--warmup", type=int, default=100, help="Number of epochs.")
     parser.add_argument("--lookahead", type=int, default=50, help="Number of epochs.")
     parser.add_argument("--model", type=str, default="h2,s2,e2", help="Model latent space description.")
+    parser.add_argument("--architecture",
+                        type=str,
+                        default="ff",
+                        help="Model encoder/decoder architecture. Possible options: 'ff', 'conv',")
     parser.add_argument("--universal", type=str2bool, default=False, help="Universal training scheme.")
     parser.add_argument("--dataset",
                         type=str,
@@ -94,12 +98,15 @@ def main() -> None:
     chkpt_dir = f"./chkpt/vae-{args.dataset}-{model_name}-{cur_time}"
     os.makedirs(chkpt_dir)
 
-    if args.dataset == "cifar":
-        model_cls = ConvolutionalVAE
-    elif args.dataset in ["mnist", "omniglot", "bdp"]:
-        model_cls = FeedForwardVAE  # type: ignore
+    if args.architecture == "ff":
+        model_cls = FeedForwardVAE
+    elif args.architecture == "conv":
+        model_cls = ConvolutionalVAE  # type: ignore
+        print("WARNING: 'conv' architecture only works with --h_dim=8192. To change the h_dim," +
+              "adjust layer sizes in 'mt/mvae/models/conv_vae.py'.")
     else:
-        raise ValueError(f"Unknown dataset '{args.dataset}'.")
+        raise ValueError(f"Unknown --architecture='{args.architecture}'. Possible options: 'ff', 'conv'.")
+
     model = model_cls(h_dim=args.h_dim,
                       components=components,
                       dataset=dataset,
