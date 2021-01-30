@@ -1,5 +1,7 @@
 # Mixed-curvature Variational Auto-Encoders
 
+![Python Package using Conda](https://github.com/oskopek/mvae/workflows/Python%20Package%20using%20Conda/badge.svg)
+
 ### PyTorch implementation
 
 ## Overview
