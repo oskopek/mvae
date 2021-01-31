@@ -46,7 +46,20 @@ def main() -> None:
                         help="Which dataset to run on. Options: 'mnist', 'bdp', 'cifar', 'omniglot'.")
     parser.add_argument("--h_dim", type=int, default=400, help="Hidden layer dimension.")
     parser.add_argument("--seed", type=int, default=None, help="Random seed.")
-    parser.add_argument("--show_embeddings", type=int, default=None, help="Show embeddings every N epochs.")
+    parser.add_argument(
+        "--show_embeddings",
+        type=int,
+        default=0,
+        help="Show embeddings every N test runs. Non-positive values mean never. Only effective if test_every > 0.")
+    parser.add_argument(
+        "--export_embeddings",
+        type=int,
+        default=0,
+        help="Export embeddings every N test runs. Non-positive values mean never. Only effective if test_every > 0.")
+    parser.add_argument("--test_every",
+                        type=int,
+                        default=0,
+                        help="Test every N epochs during training. Non-positive values mean never.")
     parser.add_argument("--train_statistics",
                         type=str2bool,
                         default=False,
@@ -116,7 +129,9 @@ def main() -> None:
                       img_dims=dataset.img_dims,
                       chkpt_dir=chkpt_dir,
                       train_statistics=args.train_statistics,
-                      show_embeddings=args.show_embeddings)
+                      show_embeddings=args.show_embeddings,
+                      export_embeddings=args.export_embeddings,
+                      test_every=args.test_every)
     optimizer = trainer.build_optimizer(learning_rate=args.learning_rate, fixed_curvature=args.fixed_curvature)
     train_loader, test_loader = dataset.create_loaders()
     betas = utils.linear_betas(args.beta_start, args.beta_end, end_epoch=args.beta_end_epoch, epochs=args.epochs)

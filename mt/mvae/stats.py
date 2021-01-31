@@ -33,13 +33,18 @@ class Stats:
                  global_step: int = 0,
                  epoch: int = 0,
                  train_statistics: bool = False,
-                 show_embeddings: Optional[int] = None):
+                 show_embeddings: int = 0,
+                 export_embeddings: int = 0,
+                 test_every: int = 0):
         self._summary_writer = SummaryWriter(chkpt_dir)
         self._global_step = global_step
         self._epoch = epoch
         self._img_dims = img_dims
-        self.show_embeddings = show_embeddings
         self.train_statistics = train_statistics
+        self.show_embeddings = show_embeddings
+        self.export_embeddings = export_embeddings
+        self.test_every = test_every
+        self.test_epochs = 0
 
     @property
     def img_dims(self) -> Optional[Tuple[int, ...]]:

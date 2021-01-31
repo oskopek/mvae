@@ -15,7 +15,7 @@
 
 from collections import defaultdict
 import os
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 import warnings
 
 import numpy as np
@@ -38,13 +38,17 @@ class Trainer:
                  img_dims: Optional[Tuple[int, ...]],
                  chkpt_dir: str = "./chkpt",
                  train_statistics: bool = False,
-                 show_embeddings: Optional[int] = None) -> None:
+                 show_embeddings: int = 0,
+                 export_embeddings: int = 0,
+                 test_every: int = 0) -> None:
         self.model = model
         self.chkpt_dir = chkpt_dir
         self.stats = Stats(chkpt_dir=chkpt_dir,
                            img_dims=img_dims,
                            show_embeddings=show_embeddings,
-                           train_statistics=train_statistics)
+                           export_embeddings=export_embeddings,
+                           train_statistics=train_statistics,
+                           test_every=test_every)
 
     @property
     def epoch(self) -> int:
@@ -118,6 +122,7 @@ class Trainer:
             train_results[self.epoch] = self._train_epoch(optimizer, train_data, beta=beta)
             self._update_checkpoints(lookahead)
             self.epoch += 1
+            self._try_test_during_train(test_results, eval_data, likelihood_n, betas)
 
         # Early stopping active
         stop_epoch = None
@@ -125,11 +130,12 @@ class Trainer:
             beta = self.get_beta(betas)
             train_results[self.epoch] = self._train_epoch(optimizer, train_data, beta=beta)
 
-            stop_epoch = Trainer._should_stop(train_results, self.stats.epoch, lookahead, max_epoch=max_epochs - 1)
+            stop_epoch = Trainer._should_stop(train_results, self.epoch, lookahead, max_epoch=max_epochs - 1)
             self._update_checkpoints(lookahead)
             if stop_epoch:
                 break
             self.epoch += 1
+            self._try_test_during_train(test_results, eval_data, likelihood_n, betas)
 
         if not stop_epoch:
             warnings.warn("Did not stop using early stopping.")
@@ -145,9 +151,14 @@ class Trainer:
         with torch.set_grad_enabled(False):
             test_results[stop_epoch] = self._test_epoch(eval_data, likelihood_n=likelihood_n, beta=self.get_beta(betas))
 
-        # self._export_representations(train_data, mode="train")
-        # self._export_representations(eval_data, mode="test")
         return test_results
+
+    def _try_test_during_train(self, test_results: Mapping[int, EpochStats], eval_data: DataLoader, likelihood_n: int,
+                               betas: Optional[Sequence[float]]) -> None:
+        if self.stats.test_every > 0 and self.epoch % self.stats.test_every == 0:
+            test_results[self.epoch - 1] = self._test_epoch(eval_data,
+                                                            likelihood_n=likelihood_n,
+                                                            beta=self.get_beta(betas))
 
     def train_epochs(self,
                      optimizer: Any,
@@ -161,6 +172,7 @@ class Trainer:
             beta = self.get_beta(betas)
             self._train_epoch(optimizer, train_data, beta=beta)
             self.epoch += 1
+            self._try_test_during_train(test_results, eval_data, likelihood_n, betas)
 
         with torch.set_grad_enabled(False):
             test_results[self.epoch - 1] = self._test_epoch(eval_data,
@@ -168,8 +180,6 @@ class Trainer:
                                                             beta=self.get_beta(betas))
 
         self._save_epoch(self.epoch)
-        # self._export_representations(train_data, mode="train")
-        # self._export_representations(eval_data, mode="test")
         return test_results
 
     def _train_epoch(self, optimizer: torch.optim.Optimizer, train_data: DataLoader, beta: float) -> EpochStats:
@@ -213,8 +223,7 @@ class Trainer:
         print(f"\tEpoch {self.epoch}:\t", end="")
         self.model.eval()
 
-        show_embeddings = self.stats.show_embeddings is not None and (self.epoch + 1) % self.stats.show_embeddings == 0
-
+        show_embeddings = self.stats.show_embeddings > 0 and self.stats.test_epochs % self.stats.show_embeddings == 0
         if show_embeddings:
             embeddings: List[List[torch.Tensor]] = [[] for _ in self.model.components]
             total_embeddings = []
@@ -275,10 +284,17 @@ class Trainer:
             epoch_dict[name] = float(component.manifold.curvature)
             self.stats.add_scalar(f"eval/epoch/{name}", component.manifold.curvature, epoch=True)
         print(epoch_dict, flush=True)
+
+        export_embeddings = self.stats.export_embeddings > 0 \
+            and self.stats.test_epochs % self.stats.export_embeddings == 0
+        if export_embeddings:
+            self._export_representations(test_data)  # TODO: merge this method with _export_representations.
+
         self.model.train()
+        self.stats.test_epochs += 1
         return epoch_stats
 
-    def _export_representations(self, data: DataLoader, mode: str) -> None:
+    def _export_representations(self, data: DataLoader, mode: str = "eval") -> None:
         print(f"\tExporting {mode} representations...")
         self.model.eval()
 
@@ -286,7 +302,7 @@ class Trainer:
         os.makedirs(repr_folder, exist_ok=True)
 
         def _filename(component: str) -> str:
-            return os.path.join(repr_folder, f"{mode}_{component}_{self.stats.epoch}.pt")
+            return os.path.join(repr_folder, f"{mode}_{component}_{self.epoch}.pt")
 
         embeddings: List[List[torch.Tensor]] = [[] for _ in self.model.components]
         total_embeddings = []
